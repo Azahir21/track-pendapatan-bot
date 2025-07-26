@@ -1,9 +1,9 @@
 import { Telegraf } from 'telegraf';
-
 import { about, chat, clearChat, help } from './commands';
 import { greeting } from './text';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { development, production } from './core';
+import { ApplicationService } from './services/ApplicationService';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,8 +31,42 @@ const setBotCommands = async () => {
   }
 };
 
+// Initialize automated reporting with safeguards
+const initializeAutomatedReporting = async () => {
+  try {
+    const appService = ApplicationService.getInstance();
+
+    // Initialize with bot instance FIRST
+    appService.initializeWithBot(bot);
+
+    // Then initialize the service
+    await appService.initialize();
+
+    // Only start automated reporting in production or if explicitly enabled
+    const enableAutomatedReports =
+      process.env.ENABLE_AUTOMATED_REPORTS === 'true' ||
+      ENVIRONMENT === 'production';
+
+    if (enableAutomatedReports) {
+      const automatedReportingService =
+        appService.getAutomatedReportingService();
+      automatedReportingService.startScheduledReports(bot);
+      console.log('Automated reporting initialized successfully');
+    } else {
+      console.log(
+        'Automated reporting disabled (set ENABLE_AUTOMATED_REPORTS=true to enable)',
+      );
+    }
+  } catch (error) {
+    console.error('Error initializing automated reporting:', error);
+  }
+};
+
 // Set commands when bot starts
 setBotCommands();
+
+// Initialize automated reporting
+initializeAutomatedReporting();
 
 bot.command('help', help());
 bot.command('about', about());

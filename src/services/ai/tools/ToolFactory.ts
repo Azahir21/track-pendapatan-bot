@@ -4,6 +4,8 @@ import { IManagerService } from '../../business/ManagerService';
 import { IEmployeeService } from '../../business/EmployeeService';
 import { IReportingService } from '../../business/ReportingService';
 import { IWebSearchService } from '../../external/WebSearchService';
+import { WeatherService } from '../../external/WeatherService';
+import { IAutomatedReportingService } from '../../automation/AutomatedReportingService';
 import { RegisterBusinessTool } from './business/RegisterBusinessTool';
 import { GetBusinessInfoTool } from './business/GetBusinessInfoTool';
 import { RegisterEmployeeTool } from './business/RegisterEmployeeTool';
@@ -15,10 +17,12 @@ import { GetIncomeHistoryTool } from './business/GetIncomeHistoryTool';
 import { GetBusinessStatsTool } from './business/GetBusinessStatsTool';
 import { GenerateEmployeeReportTool } from './business/GenerateEmployeeReportTool';
 import { GenerateTrendAnalysisTool } from './business/GenerateTrendAnalysisTool';
+import { ManageReportScheduleTool } from './business/ManageReportScheduleTool';
 import { UpdateBusinessNameTool } from './business/UpdateBusinessNameTool';
 import { GetCurrentTimeTool } from './utility/GetCurrentTimeTool';
 import { CalculateMathTool } from './utility/CalculateMathTool';
 import { GetWeatherTool } from './utility/GetWeatherTool';
+import { Telegraf } from 'telegraf';
 import createDebug from 'debug';
 
 const debug = createDebug('bot:tool-factory');
@@ -31,6 +35,9 @@ export class ToolFactory {
     private readonly employeeService: IEmployeeService,
     private readonly reportingService: IReportingService,
     private readonly webSearchService: IWebSearchService,
+    private readonly automatedReportingService: IAutomatedReportingService,
+    private readonly weatherService: WeatherService,
+    private readonly bot?: Telegraf, // Add bot instance
   ) {}
 
   public createTools(userId: string) {
@@ -40,7 +47,7 @@ export class ToolFactory {
       // Utility tools
       getCurrentTime: new GetCurrentTimeTool(),
       calculateMath: new CalculateMathTool(),
-      getWeather: new GetWeatherTool(),
+      getWeather: new GetWeatherTool(this.weatherService),
 
       // Business management tools
       registerBusiness: new RegisterBusinessTool(this.managerService, userId),
@@ -106,6 +113,13 @@ export class ToolFactory {
         this.reportingService,
         this.webSearchService,
         userId,
+      ),
+
+      // Automation tools
+      manageReportSchedule: new ManageReportScheduleTool(
+        this.automatedReportingService,
+        userId,
+        this.bot, // Pass bot instance
       ),
     };
 

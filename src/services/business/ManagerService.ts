@@ -15,6 +15,7 @@ export interface IManagerService {
     businessName: string,
   ): Promise<Manager | null>;
   getManagerByTelegramId(telegramUserId: string): Promise<Manager | null>;
+  getAllManagers(): Promise<Manager[]>; // <-- Add this line
 }
 
 export class ManagerService implements IManagerService {
@@ -92,5 +93,10 @@ export class ManagerService implements IManagerService {
       debug('Error registering business:', error);
       throw error;
     }
+  }
+
+  public async getAllManagers(): Promise<Manager[]> {
+    debug('Getting all managers');
+    return await this.managerRepository.findAll();
   }
 }

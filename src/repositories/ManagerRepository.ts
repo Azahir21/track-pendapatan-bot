@@ -7,6 +7,7 @@ export interface IManagerRepository {
   create(manager: Omit<IManager, 'id' | 'created_at'>): Promise<Manager>;
   update(id: number, manager: Partial<IManager>): Promise<Manager | null>;
   delete(id: number): Promise<boolean>;
+  findAll(): Promise<Manager[]>; // <-- Add this line
 }
 
 export class ManagerRepository
@@ -80,5 +81,14 @@ export class ManagerRepository
     const query = 'DELETE FROM "TrackPendapatanBot".managers WHERE id = $1';
     const result = await this.pool.query(query, [id]);
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  public async findAll(): Promise<Manager[]> {
+    const query = `
+      SELECT * FROM "TrackPendapatanBot".managers 
+      ORDER BY created_at DESC
+    `;
+    const result = await this.pool.query(query);
+    return result.rows.map((row) => Manager.fromDatabaseRow(row));
   }
 }

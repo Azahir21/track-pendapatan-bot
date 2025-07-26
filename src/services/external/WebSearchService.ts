@@ -32,7 +32,7 @@ export class WebSearchService implements IWebSearchService {
       debug('Searching for:', query);
 
       const response = await this.customSearch.cse.list({
-        auth: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+        auth: process.env.GOOGLE_SEARCH_ENGINE_API_KEY,
         cx: this.searchEngineId,
         q: query,
         num: numResults,

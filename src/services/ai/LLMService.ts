@@ -198,6 +198,9 @@ export class LLMService implements ILLMService {
       case 'generateTrendAnalysis':
         return `${toolResult}\n\n📈 This trend analysis provides valuable business intelligence with real market context. Use these insights to:\n• Make informed business decisions\n• Adapt to market changes\n• Plan for future growth\n• Optimize operations`;
 
+      case 'manageReportSchedule':
+        return `${toolResult}\n\n⚙️ Report schedule management completed. You can:\n• Check schedule status anytime\n• Enable/disable specific report types\n• Request immediate test reports\n• Receive automated reports as scheduled`;
+
       default:
         return `${toolResult}\n\nIs there anything else I can help you with for your garage business?`;
     }

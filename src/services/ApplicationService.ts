@@ -1,5 +1,6 @@
 // src/services/ApplicationService.ts
 import { Pool } from 'pg';
+import { Telegraf } from 'telegraf';
 import {
   DatabaseConnection,
   IDatabaseConnection,
@@ -16,10 +17,16 @@ import { ManagerService } from './business/ManagerService';
 import { EmployeeService } from './business/EmployeeService';
 import { ReportingService } from './business/ReportingService';
 import { WebSearchService } from './external/WebSearchService';
+import {
+  AutomatedReportingService,
+  IAutomatedReportingService,
+} from './automation/AutomatedReportingService';
 import { SessionManager } from './ai/SessionManager';
 import { ToolFactory } from './ai/tools/ToolFactory';
 import { LLMService, ILLMService } from './ai/LLMService';
 import createDebug from 'debug';
+import { WeatherService } from './external/WeatherService';
+import { MarketResearchService } from './external/MarketResearchService';
 
 const debug = createDebug('bot:app-service');
 
@@ -27,7 +34,9 @@ export class ApplicationService {
   private static instance: ApplicationService | null = null;
   private databaseConnection: IDatabaseConnection | null = null;
   private llmService: ILLMService | null = null;
+  private automatedReportingService: IAutomatedReportingService | null = null;
   private initialized: boolean = false;
+  private bot: Telegraf | null = null;
 
   private constructor() {
     // Private constructor for singleton
@@ -38,6 +47,11 @@ export class ApplicationService {
       ApplicationService.instance = new ApplicationService();
     }
     return ApplicationService.instance;
+  }
+
+  public initializeWithBot(bot: Telegraf): void {
+    this.bot = bot;
+    debug('Bot instance set in ApplicationService');
   }
 
   private initializeServices(): void {
@@ -69,8 +83,19 @@ export class ApplicationService {
 
       // Initialize external services
       const webSearchService = new WebSearchService();
+      const weatherService = new WeatherService();
+      const marketResearchService = new MarketResearchService(webSearchService);
 
-      // Initialize AI services
+      // Initialize automation services
+      this.automatedReportingService = new AutomatedReportingService(
+        managerService,
+        reportingService,
+        webSearchService,
+        weatherService,
+        marketResearchService,
+      );
+
+      // Initialize AI services with bot instance
       const sessionManager = new SessionManager();
       const toolFactory = new ToolFactory(
         userService,
@@ -79,6 +104,9 @@ export class ApplicationService {
         employeeService,
         reportingService,
         webSearchService,
+        this.automatedReportingService,
+        weatherService,
+        this.bot || undefined, // Pass bot instance to ToolFactory
       );
       this.llmService = new LLMService(sessionManager, toolFactory);
 
@@ -149,15 +177,30 @@ export class ApplicationService {
     return this.llmService;
   }
 
+  public getAutomatedReportingService(): IAutomatedReportingService {
+    if (!this.initialized || !this.automatedReportingService) {
+      throw new Error('Application not initialized. Call initialize() first.');
+    }
+    return this.automatedReportingService;
+  }
+
   public isInitialized(): boolean {
     return this.initialized;
   }
 
   public async shutdown(): Promise<void> {
     debug('Shutting down application...');
+
+    // Stop automated reporting
+    if (this.automatedReportingService) {
+      this.automatedReportingService.stopScheduledReports();
+    }
+
+    // Close database connection
     if (this.databaseConnection) {
       await this.databaseConnection.disconnect();
     }
+
     debug('Application shutdown complete');
   }
 }
