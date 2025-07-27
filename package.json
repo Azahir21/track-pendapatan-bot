@@ -1,10 +1,10 @@
 {
-  "name": "telegram-bot-vercel-boilerplate",
+  "name": "Track Garage Income Telegram Bot",
   "version": "1.1.0",
-  "description": "Telegram Bot Vercel Boilerplate",
+  "description": "A Telegram bot for tracking garage income, built with Telegraf and Google Generative AI.",
   "main": "src/index.ts",
-  "author": "Mark Pavlov (https://github.com/sollidy)",
-  "homepage": "https://github.com/sollidy/telegram-bot-vercel-boilerplate",
+  "author": "Kei (https://github.com/Azahir21)",
+  "homepage": "https://github.com/Azahir21/track-pendapatan-bot",
   "dependencies": {
     "@ai-sdk/google": "^1.2.22",
     "@types/pg": "^8.15.4",
