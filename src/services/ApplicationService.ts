@@ -5,7 +5,6 @@ import {
   IDatabaseConnection,
 } from './database/DatabaseConnection';
 import { DatabaseConfig } from './database/DatabaseConfig';
-import { DatabaseInitializer } from './database/DatabaseInitializer';
 import { UserRepository } from '../repositories/UserRepository';
 import { IncomeEntryRepository } from '../repositories/IncomeEntryRepository';
 import { ManagerRepository } from '../repositories/ManagerRepository';
@@ -134,7 +133,7 @@ export class ApplicationService {
       }
 
       // Initialize database schema
-      await this.initializeDatabase();
+      // await this.initializeDatabase();
 
       this.initialized = true;
       debug('Application initialized successfully');
@@ -158,15 +157,6 @@ export class ApplicationService {
     }
 
     return connected;
-  }
-
-  private async initializeDatabase(): Promise<void> {
-    if (!this.databaseConnection) {
-      throw new Error('Database connection not initialized');
-    }
-    const pool = this.databaseConnection.getPool();
-    const initializer = new DatabaseInitializer(pool);
-    await initializer.initialize();
   }
 
   public getLLMService(): ILLMService {
