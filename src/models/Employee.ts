@@ -1,4 +1,3 @@
-// src/models/Employee.ts
 export interface IEmployee {
   id?: number;
   manager_id: number;

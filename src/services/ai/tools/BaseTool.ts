@@ -1,4 +1,3 @@
-// src/services/ai/tools/BaseTool.ts
 import { z } from 'zod';
 
 export interface IToolParameter {

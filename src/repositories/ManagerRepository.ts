@@ -1,4 +1,3 @@
-// src/repositories/ManagerRepository.ts
 import { BaseRepository } from './BaseRepository';
 import { Manager, IManager } from '../models/Manager';
 
@@ -7,7 +6,7 @@ export interface IManagerRepository {
   create(manager: Omit<IManager, 'id' | 'created_at'>): Promise<Manager>;
   update(id: number, manager: Partial<IManager>): Promise<Manager | null>;
   delete(id: number): Promise<boolean>;
-  findAll(): Promise<Manager[]>; // <-- Add this line
+  findAll(): Promise<Manager[]>;
 }
 
 export class ManagerRepository

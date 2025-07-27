@@ -1,4 +1,3 @@
-// src/models/Manager.ts
 export interface IManager {
   id?: number;
   telegram_user_id: string;

@@ -1,4 +1,3 @@
-// src/repositories/UserRepository.ts
 import { Pool } from 'pg';
 import { BaseRepository } from './BaseRepository';
 import { User, IUser } from '../models/User';

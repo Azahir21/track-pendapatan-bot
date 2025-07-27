@@ -97,14 +97,11 @@ export class WeatherService implements IWeatherService {
     }
 
     try {
-      // Get coordinates first
       const coords = await this.getCoordinates(city);
       const weatherHistory: WeatherData[] = [];
 
-      // Get weather for each day in the range
       const currentDate = new Date(startDate);
       while (currentDate <= endDate && weatherHistory.length < 30) {
-        // Limit to 30 days to avoid rate limits
         try {
           const timestamp = Math.floor(currentDate.getTime() / 1000);
           const url = `${this.historyUrl}?lat=${coords.lat}&lon=${coords.lon}&dt=${timestamp}&appid=${this.apiKey}&units=metric`;
@@ -134,7 +131,6 @@ export class WeatherService implements IWeatherService {
 
         currentDate.setDate(currentDate.getDate() + 1);
 
-        // Add delay to avoid rate limiting
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
@@ -154,7 +150,7 @@ export class WeatherService implements IWeatherService {
     if (weatherData.length === 0) {
       return {
         period: 'No data',
-        averageTemp: 28, // Default Jakarta temperature
+        averageTemp: 28,
         dominantCondition: 'Partly Cloudy',
         rainyDays: 0,
         totalDays: 0,
@@ -169,7 +165,6 @@ export class WeatherService implements IWeatherService {
     const averageTemp =
       weatherData.reduce((sum, w) => sum + w.temperature, 0) / totalDays;
 
-    // Count weather conditions
     const conditionCounts = weatherData.reduce(
       (counts, w) => {
         counts[w.condition] = (counts[w.condition] || 0) + 1;
@@ -228,7 +223,6 @@ export class WeatherService implements IWeatherService {
       };
     } catch (error) {
       debug('Error getting coordinates, using Jakarta default:', error);
-      // Default to Jakarta coordinates
       return { lat: -6.2088, lon: 106.8456 };
     }
   }
@@ -246,7 +240,6 @@ export class WeatherService implements IWeatherService {
     let businessRecommendation = '';
 
     if (businessType === 'garage') {
-      // Temperature insights for garage business
       if (avgTemp > 32) {
         weatherImpact +=
           'Hot weather increases AC service demand and may reduce outdoor work efficiency. ';
@@ -264,7 +257,6 @@ export class WeatherService implements IWeatherService {
           'Take advantage of comfortable weather for comprehensive vehicle inspections and exterior work. ';
       }
 
-      // Rain insights for garage business
       if (rainyPercentage > 40) {
         weatherImpact += `Frequent rainfall (${rainyDays}/${totalDays} days) likely reduced walk-in customers but increased urgent repair needs. `;
         businessRecommendation +=
@@ -279,14 +271,11 @@ export class WeatherService implements IWeatherService {
           'Maximize outdoor services like painting, bodywork, and thorough vehicle cleaning during dry periods. ';
       }
 
-      // Seasonal context
       const currentMonth = new Date().getMonth();
       if (currentMonth >= 11 || currentMonth <= 2) {
-        // Dec-Feb (rainy season)
         businessRecommendation +=
           'Rainy season strategy: Stock wiper blades, brake pads, and waterproofing supplies. ';
       } else if (currentMonth >= 6 && currentMonth <= 8) {
-        // Jul-Sep (dry season)
         businessRecommendation +=
           'Dry season focus: AC servicing, cooling system maintenance, and dust filter replacements. ';
       }
@@ -300,14 +289,11 @@ export class WeatherService implements IWeatherService {
     const month = now.getMonth();
     const hour = now.getHours();
 
-    // Jakarta climate patterns
     let baseTemp = 28;
     let conditions = ['Clear', 'Partly Cloudy', 'Cloudy'];
     let descriptions = ['clear sky', 'partly cloudy', 'overcast clouds'];
 
-    // Seasonal adjustments
     if (month >= 11 || month <= 2) {
-      // Rainy season
       baseTemp = 26;
       conditions = ['Rain', 'Thunderstorm', 'Cloudy', 'Drizzle'];
       descriptions = [
@@ -317,24 +303,18 @@ export class WeatherService implements IWeatherService {
         'light drizzle',
       ];
     } else if (month >= 6 && month <= 8) {
-      // Dry season
       baseTemp = 30;
       conditions = ['Clear', 'Sunny', 'Partly Cloudy'];
       descriptions = ['clear sky', 'sunny', 'few clouds'];
     }
 
-    // Daily temperature variation
     if (hour >= 6 && hour <= 10) {
-      // Morning
       baseTemp -= 2;
     } else if (hour >= 12 && hour <= 16) {
-      // Afternoon peak
       baseTemp += 4;
     } else if (hour >= 18 && hour <= 22) {
-      // Evening
       baseTemp += 1;
     } else {
-      // Night/early morning
       baseTemp -= 3;
     }
 
@@ -346,8 +326,8 @@ export class WeatherService implements IWeatherService {
         Math.min(36, baseTemp + Math.floor(Math.random() * 4) - 2),
       ),
       condition: conditions[randomIndex],
-      humidity: 70 + Math.floor(Math.random() * 20), // 70-90% typical for Jakarta
-      windSpeed: 5 + Math.floor(Math.random() * 10), // 5-15 km/h
+      humidity: 70 + Math.floor(Math.random() * 20),
+      windSpeed: 5 + Math.floor(Math.random() * 10),
       description: descriptions[randomIndex],
       icon: this.getWeatherIcon(conditions[randomIndex]),
     };
@@ -361,11 +341,9 @@ export class WeatherService implements IWeatherService {
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-      // Use the current date for seasonal accuracy
       const originalDate = new Date();
       const tempDate = new Date(currentDate);
 
-      // Set the current time to the historical date for seasonal calculation
       new Date().setMonth(tempDate.getMonth());
       new Date().setDate(tempDate.getDate());
 

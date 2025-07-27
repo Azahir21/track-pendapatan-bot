@@ -27,7 +27,7 @@ export class ManageReportScheduleTool extends BaseTool {
   constructor(
     private readonly automatedReportingService: IAutomatedReportingService,
     private readonly telegramUserId: string,
-    private readonly bot?: Telegraf, // Add bot instance to actually send reports
+    private readonly bot?: Telegraf,
   ) {
     super();
   }
@@ -98,7 +98,6 @@ export class ManageReportScheduleTool extends BaseTool {
     try {
       debug('Sending immediate test report for user:', this.telegramUserId);
 
-      // Actually send the test report using the AutomatedReportingService
       if (this.bot) {
         await this.automatedReportingService.sendTestReport(
           this.telegramUserId,
@@ -106,7 +105,6 @@ export class ManageReportScheduleTool extends BaseTool {
         );
         return `🧪 Test Report Sent Successfully!\n\n📊 Check your messages - you should have received a detailed test report with your current business data.\n\n⏱️ The report includes today's income, active employees, and quick business insights.`;
       } else {
-        // Fallback - generate report content without sending
         return `🧪 Test report generated!\n\n📊 Report content would be sent here, but bot instance not available for direct sending.\n\n💡 Try using the automated test reports that run every 3 minutes in development mode.`;
       }
     } catch (error) {

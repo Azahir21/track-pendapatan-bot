@@ -34,7 +34,6 @@ export class GetWeatherTool extends BaseTool {
       response += `Wind Speed: ${weatherData.windSpeed} km/h\n`;
 
       if (includeBusinessInsights) {
-        // Add business context for garage operations
         if (weatherData.condition.toLowerCase().includes('rain')) {
           response += `\n💡 **Business Impact**: Rainy weather may increase brake and electrical service demand while reducing walk-in traffic.`;
         } else if (weatherData.temperature > 32) {

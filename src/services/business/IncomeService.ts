@@ -1,4 +1,3 @@
-// src/services/business/IncomeService.ts
 import { IncomeEntry } from '../../models/IncomeEntry';
 import { User } from '../../models/User';
 import { Employee } from '../../models/Employee';
@@ -251,10 +250,8 @@ export class IncomeService implements IIncomeService {
     try {
       const currentDate = new Date();
 
-      // For manager stats, we need to aggregate all employees' data
       const allEntries = await this.incomeRepository.findByManagerId(managerId);
 
-      // Calculate today's stats
       const today = {
         count: 0,
         total: 0,
@@ -269,7 +266,6 @@ export class IncomeService implements IIncomeService {
       today.count = todayEntries.length;
       today.total = todayEntries.reduce((sum, entry) => sum + entry.amount, 0);
 
-      // Calculate monthly stats
       const month = {
         count: 0,
         total: 0,
@@ -289,7 +285,6 @@ export class IncomeService implements IIncomeService {
       month.count = monthEntries.length;
       month.total = monthEntries.reduce((sum, entry) => sum + entry.amount, 0);
 
-      // Get top services
       const topServices =
         await this.incomeRepository.getServiceStatsByManagerId(managerId);
 

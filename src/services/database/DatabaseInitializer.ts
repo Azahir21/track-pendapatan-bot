@@ -1,4 +1,3 @@
-// src/services/database/DatabaseInitializer.ts
 import { Pool } from 'pg';
 import createDebug from 'debug';
 

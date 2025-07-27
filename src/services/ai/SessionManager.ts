@@ -1,4 +1,3 @@
-// src/services/ai/SessionManager.ts
 export interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -21,13 +20,12 @@ export class SessionManager implements ISessionManager {
 
   public addMessage(userId: string, message: ConversationMessage): void {
     if (!message.content || !message.content.trim()) {
-      return; // Don't add empty messages
+      return;
     }
 
     let conversation = this.getSession(userId);
     conversation.push({ ...message, content: message.content.trim() });
 
-    // Keep only last N messages to avoid token limits
     if (conversation.length > this.maxMessages) {
       conversation = conversation.slice(-this.maxMessages);
     }
@@ -42,12 +40,10 @@ export class SessionManager implements ISessionManager {
   public validateMessages(
     messages: ConversationMessage[],
   ): ConversationMessage[] {
-    // Filter out empty messages and ensure all messages have content
     const validMessages = messages.filter(
       (msg) => msg.content && msg.content.trim().length > 0,
     );
 
-    // Ensure we have at least one message
     if (validMessages.length === 0) {
       validMessages.push({ role: 'user', content: 'Hello' });
     }

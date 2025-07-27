@@ -26,7 +26,6 @@ export class GetBusinessInfoTool extends BaseTool {
     try {
       debug('Getting business info for user:', this.telegramUserId);
 
-      // Get manager/business info
       const manager = await this.managerService.getManagerByTelegramId(
         this.telegramUserId,
       );
@@ -35,17 +34,14 @@ export class GetBusinessInfoTool extends BaseTool {
         return `❌ No Business Found!\n\nYou don't have a registered business yet. Use the registerBusiness tool to create your garage business first.\n\n🚀 To get started:\n1. Register your business with a name\n2. Add employees to your team\n3. Start tracking daily income`;
       }
 
-      // Get employees count
       const employees = await this.employeeService.getEmployeesByManager(
         manager.id!,
       );
       const employeeCount = employees.length;
 
-      // Get basic statistics (today's income)
       let todayStats = 'No income recorded today';
       try {
         const today = new Date().toISOString().split('T')[0];
-        // This would need to be implemented in your income service
         todayStats = 'Income data available - use getTodayIncome for details';
       } catch (error) {
         debug('Error getting today stats:', error);

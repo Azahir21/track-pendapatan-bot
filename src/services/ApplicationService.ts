@@ -1,4 +1,3 @@
-// src/services/ApplicationService.ts
 import { Pool } from 'pg';
 import { Telegraf } from 'telegraf';
 import {
@@ -106,7 +105,7 @@ export class ApplicationService {
         webSearchService,
         this.automatedReportingService,
         weatherService,
-        this.bot || undefined, // Pass bot instance to ToolFactory
+        this.bot || undefined,
       );
       this.llmService = new LLMService(sessionManager, toolFactory);
 

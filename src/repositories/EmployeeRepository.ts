@@ -1,4 +1,3 @@
-// src/repositories/EmployeeRepository.ts
 import { BaseRepository } from './BaseRepository';
 import { Employee, IEmployee } from '../models/Employee';
 

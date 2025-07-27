@@ -1,4 +1,3 @@
-// src/services/business/EmployeeService.ts
 import { IEmployeeRepository } from '../../repositories/EmployeeRepository';
 import { Employee } from '../../models/Employee';
 import createDebug from 'debug';
@@ -40,7 +39,6 @@ export class EmployeeService implements IEmployeeService {
       managerId,
     );
 
-    // Try to find existing employee
     let employee = await this.employeeRepository.findByManagerIdAndName(
       managerId,
       employeeName,

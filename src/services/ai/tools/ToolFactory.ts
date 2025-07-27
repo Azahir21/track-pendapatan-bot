@@ -37,7 +37,7 @@ export class ToolFactory {
     private readonly webSearchService: IWebSearchService,
     private readonly automatedReportingService: IAutomatedReportingService,
     private readonly weatherService: WeatherService,
-    private readonly bot?: Telegraf, // Add bot instance
+    private readonly bot?: Telegraf,
   ) {}
 
   public createTools(userId: string) {
@@ -119,7 +119,7 @@ export class ToolFactory {
       manageReportSchedule: new ManageReportScheduleTool(
         this.automatedReportingService,
         userId,
-        this.bot, // Pass bot instance
+        this.bot,
       ),
     };
 

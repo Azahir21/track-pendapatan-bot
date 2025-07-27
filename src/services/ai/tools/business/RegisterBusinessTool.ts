@@ -33,7 +33,6 @@ export class RegisterBusinessTool extends BaseTool {
       debug('Registering business for user:', this.telegramUserId);
       debug('Business name:', businessName);
 
-      // Check if user already has a business
       const existingManager = await this.managerService.getManagerByTelegramId(
         this.telegramUserId,
       );
@@ -42,7 +41,6 @@ export class RegisterBusinessTool extends BaseTool {
         return `⚠️ Business Already Registered!\n\nYou already have a business registered: "${existingManager.business_name}"\n\n🔄 Each account can only have ONE business. If you want to change your business name, use the updateBusinessName tool instead.\n\n💡 Current Business: ${existingManager.business_name}\n📅 Registered: ${new Date(existingManager.created_at!).toLocaleDateString('id-ID')}\n\nWhat would you like to do next? You can:\n- Register employees\n- Record daily income\n- View business statistics`;
       }
 
-      // Create new business/manager
       const newManager = await this.managerService.getOrCreateManager(
         this.telegramUserId,
         businessName.trim(),

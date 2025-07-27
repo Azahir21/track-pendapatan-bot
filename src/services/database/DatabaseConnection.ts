@@ -1,4 +1,3 @@
-// src/services/database/DatabaseConnection.ts
 import { Pool, PoolConfig } from 'pg';
 import createDebug from 'debug';
 

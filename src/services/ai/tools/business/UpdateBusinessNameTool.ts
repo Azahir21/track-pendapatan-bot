@@ -26,13 +26,11 @@ export class UpdateBusinessNameTool extends BaseTool {
     try {
       debug('Updating business name to:', businessName);
 
-      // Get or create manager
       const manager = await this.managerService.getOrCreateManager(
         this.telegramUserId,
         businessName,
       );
 
-      // If manager already exists, update the business name
       if (manager.business_name !== businessName) {
         const updatedManager = await this.managerService.updateManager(
           manager.id!,

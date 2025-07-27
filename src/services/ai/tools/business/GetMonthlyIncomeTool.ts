@@ -1,4 +1,3 @@
-// src/services/ai/tools/business/GetMonthlyIncomeTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 import { IUserService } from '../../../business/UserService';

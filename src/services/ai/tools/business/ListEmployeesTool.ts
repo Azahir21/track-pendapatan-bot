@@ -1,4 +1,3 @@
-// src/services/ai/tools/business/ListEmployeesTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 import { IManagerService } from '../../../business/ManagerService';
@@ -24,7 +23,6 @@ export class ListEmployeesTool extends BaseTool {
     try {
       debug('Listing employees for telegram user:', this.telegramUserId);
 
-      // Get manager
       const manager = await this.managerService.getManagerByTelegramId(
         this.telegramUserId,
       );
@@ -32,7 +30,6 @@ export class ListEmployeesTool extends BaseTool {
         return 'No business found. Please register an employee first to create your business.';
       }
 
-      // Get all employees
       const employees = await this.employeeService.getEmployeesByManager(
         manager.id!,
       );

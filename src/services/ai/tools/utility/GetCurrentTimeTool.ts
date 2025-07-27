@@ -1,4 +1,3 @@
-// src/services/ai/tools/utility/GetCurrentTimeTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 

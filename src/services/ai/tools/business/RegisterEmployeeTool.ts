@@ -1,4 +1,3 @@
-// src/services/ai/tools/business/RegisterEmployeeTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 import { IManagerService } from '../../../business/ManagerService';
@@ -32,12 +31,10 @@ export class RegisterEmployeeTool extends BaseTool {
     try {
       debug('Attempting to register employee:', employeeName);
 
-      // Get or create manager (the telegram user managing the business)
       const manager = await this.managerService.getOrCreateManager(
         this.telegramUserId,
       );
 
-      // Create new employee
       const newEmployee = await this.employeeService.getOrCreateEmployee(
         manager.id!,
         employeeName,

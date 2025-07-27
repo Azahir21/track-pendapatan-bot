@@ -1,4 +1,3 @@
-// src/repositories/BaseRepository.ts
 import { Pool } from 'pg';
 
 export abstract class BaseRepository {

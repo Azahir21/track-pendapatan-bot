@@ -68,6 +68,6 @@ export class WebSearchService implements IWebSearchService {
       allResults.push(...results);
     }
 
-    return allResults.slice(0, 10); // Return top 10 most relevant results
+    return allResults.slice(0, 10);
   }
 }

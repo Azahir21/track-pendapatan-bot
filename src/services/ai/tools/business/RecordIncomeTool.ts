@@ -1,4 +1,3 @@
-// src/services/ai/tools/business/RecordIncomeTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 import { IManagerService } from '../../../business/ManagerService';
@@ -41,7 +40,6 @@ export class RecordIncomeTool extends BaseTool {
     notes?: string;
   }): Promise<string> {
     try {
-      // Get manager
       const manager = await this.managerService.getManagerByTelegramId(
         this.telegramUserId,
       );
@@ -49,13 +47,11 @@ export class RecordIncomeTool extends BaseTool {
         return 'No business found. Please register an employee first to create your business.';
       }
 
-      // Get or create employee
       const employee = await this.employeeService.getOrCreateEmployee(
         manager.id!,
         employeeName,
       );
 
-      // Record income for the employee
       const entry = await this.incomeService.recordIncomeForEmployee(
         employee,
         amount,

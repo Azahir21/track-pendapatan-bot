@@ -1,4 +1,3 @@
-// src/services/ai/tools/utility/CalculateMathTool.ts
 import { z } from 'zod';
 import { BaseTool } from '../BaseTool';
 
@@ -18,7 +17,6 @@ export class CalculateMathTool extends BaseTool {
     expression: string;
   }): Promise<string> {
     try {
-      // Simple math evaluation (be careful in production - use a proper math parser)
       const result = Function(`"use strict"; return (${expression})`)();
       return `The result of ${expression} is ${result}`;
     } catch (error) {

@@ -39,7 +39,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     weatherService?: IWeatherService,
     marketResearchService?: IMarketResearchService,
   ) {
-    // Initialize services with fallbacks
     this.weatherService = weatherService || new WeatherService();
     this.marketResearchService =
       marketResearchService || new MarketResearchService(webSearchService);
@@ -50,15 +49,15 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     // Test report every 3 minutes (for development/testing)
     this.schedules.set('test', {
       type: 'test',
-      interval: 3 * 60 * 1000, // 3 minutes
+      interval: 3 * 60 * 1000,
       description: 'Test report every 3 minutes',
-      enabled: process.env.NODE_ENV === 'development', // Only enable in dev
+      enabled: process.env.NODE_ENV === 'development',
     });
 
     // Weekly report every Friday at 5 PM (check every hour)
     this.schedules.set('weekly', {
       type: 'weekly',
-      interval: 60 * 60 * 1000, // Check every hour
+      interval: 60 * 60 * 1000,
       description: 'Weekly report every Friday at 5 PM',
       enabled: true,
     });
@@ -66,7 +65,7 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     // Monthly report on the 1st of every month at 9 AM (check every hour)
     this.schedules.set('monthly', {
       type: 'monthly',
-      interval: 60 * 60 * 1000, // Check every hour
+      interval: 60 * 60 * 1000,
       description: 'Monthly report on 1st of every month at 9 AM',
       enabled: true,
     });
@@ -74,7 +73,7 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     // Yearly report on January 1st at 10 AM (check every hour)
     this.schedules.set('yearly', {
       type: 'yearly',
-      interval: 60 * 60 * 1000, // Check every hour
+      interval: 60 * 60 * 1000,
       description: 'Yearly report on January 1st at 10 AM',
       enabled: true,
     });
@@ -97,14 +96,12 @@ export class AutomatedReportingService implements IAutomatedReportingService {
   ): void {
     debug(`Starting ${schedule.type} reports: ${schedule.description}`);
 
-    // Clear existing interval if any
     if (this.intervals.has(key)) {
       clearInterval(this.intervals.get(key));
     }
 
     const intervalId = setInterval(async () => {
       try {
-        // Check if it's the right time to send the report
         if (this.shouldSendReport(schedule.type)) {
           await this.executeScheduledReport(schedule.type, bot);
         }
@@ -158,7 +155,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     debug(`Executing ${type} report`);
 
     try {
-      // Get all registered managers (businesses)
       const managers = await this.getAllManagers();
 
       if (managers.length === 0) {
@@ -194,7 +190,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
 
           const fullReport = `${reportTitle}\n\n🏢 ${manager.business_name}\n${this.getCurrentDateTime()}\n\n${reportContent}`;
 
-          // Send report to business owner
           await bot.telegram.sendMessage(manager.telegram_user_id, fullReport);
           debug(
             `${type} report sent to ${manager.telegram_user_id} (${manager.business_name})`,
@@ -220,7 +215,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         endDate,
       );
 
-      // Get current weather with enhanced error handling
       let weatherContext = '';
       try {
         const currentWeather =
@@ -235,7 +229,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         weatherContext += `   Condition: ${currentWeather.condition}\n`;
         weatherContext += `   Humidity: ${currentWeather.humidity}%\n`;
 
-        // Business-specific insights
         if (currentWeather.condition.toLowerCase().includes('rain')) {
           weatherContext += `   💡 Rainy conditions may reduce walk-in traffic but increase emergency brake and electrical services\n`;
           weatherContext += `   🔧 Recommended: Stock wiper blades and offer covered service areas\n`;
@@ -265,7 +258,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
       content += `🔄 This is an automated test report sent every 3 minutes.\n`;
       content += `💡 Disable in production by setting NODE_ENV=production\n`;
 
-      // Add API status info for development
       if (process.env.NODE_ENV === 'development') {
         const apiStatus = process.env.WEATHER_API_KEY
           ? '✅ Weather API configured'
@@ -303,7 +295,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         content += '\n';
       }
 
-      // Add weather insights with error handling
       try {
         const weatherData = await this.weatherService.getWeatherHistory(
           'Jakarta',
@@ -326,7 +317,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         content += `🌤️ Weather analysis temporarily unavailable\n\n`;
       }
 
-      // Add market insights with error handling
       try {
         const industryInsights =
           await this.marketResearchService.getIndustryInsights(
@@ -370,7 +360,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         endDate,
       );
 
-      // Get trend analysis for last 3 months
       const trendAnalysis = await this.reportingService.generateTrendAnalysis(
         managerId,
         3,
@@ -394,9 +383,7 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         content += '\n';
       }
 
-      // Enhanced insights with error handling
       try {
-        // Weather Analysis
         const weatherData = await this.weatherService.getWeatherHistory(
           'Jakarta',
           startDate,
@@ -411,7 +398,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         content += `   ${weatherInsights.weatherImpact}\n`;
         content += `   Recommendation: ${weatherInsights.businessRecommendation}\n\n`;
 
-        // Seasonal Insights
         const seasonalInsights =
           await this.marketResearchService.getSeasonalInsights(
             startDate.getMonth(),
@@ -436,7 +422,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         }
         content += '\n';
 
-        // Economic Context
         const economicInsights =
           await this.marketResearchService.getEconomicFactors('indonesia');
         content += `📊 Economic Context:\n`;
@@ -470,7 +455,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         endDate,
       );
 
-      // Get 12-month trend analysis
       const trendAnalysis = await this.reportingService.generateTrendAnalysis(
         managerId,
         12,
@@ -494,9 +478,7 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         content += '\n';
       }
 
-      // Comprehensive market analysis with error handling
       try {
-        // Industry Analysis
         const industryInsights =
           await this.marketResearchService.getIndustryInsights(
             'automotive garage',
@@ -513,7 +495,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         });
         content += '\n';
 
-        // Competitive Landscape
         const competitorAnalysis =
           await this.marketResearchService.analyzeCompetitorTrends(
             'automotive garage',
@@ -524,16 +505,15 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         });
         content += '\n';
 
-        // Seasonal Analysis
         const seasonalPatterns = await Promise.all([
           this.marketResearchService.getSeasonalInsights(
             11,
             'automotive garage',
-          ), // Rainy season
+          ),
           this.marketResearchService.getSeasonalInsights(
             6,
             'automotive garage',
-          ), // Dry season
+          ),
         ]);
 
         content += `🌅 Seasonal Business Patterns:\n`;
@@ -546,7 +526,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
         });
         content += '\n';
 
-        // Economic Context
         const economicInsights =
           await this.marketResearchService.getEconomicFactors('indonesia');
         content += `📊 Economic Environment:\n`;
@@ -631,7 +610,6 @@ export class AutomatedReportingService implements IAutomatedReportingService {
     Array<{ id: number; telegram_user_id: string; business_name: string }>
   > {
     try {
-      // Get all managers from the service
       const managers = await this.managerService.getAllManagers();
       return managers.map((manager) => ({
         id: manager.id!,

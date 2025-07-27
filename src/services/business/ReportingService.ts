@@ -225,7 +225,6 @@ export class ReportingService implements IReportingService {
     const currentDate = new Date();
     const queryLower = query.toLowerCase();
 
-    // This week
     if (queryLower.includes('this week')) {
       const startOfWeek = new Date(currentDate);
       startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
@@ -239,7 +238,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // Last week
     if (queryLower.includes('last week')) {
       const startOfLastWeek = new Date(currentDate);
       startOfLastWeek.setDate(currentDate.getDate() - currentDate.getDay() - 7);
@@ -253,7 +251,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // X weeks ago
     const weeksAgoMatch = queryLower.match(/(\d+)\s*weeks?\s*ago/);
     if (weeksAgoMatch) {
       const weeksAgo = parseInt(weeksAgoMatch[1]);
@@ -271,7 +268,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // This month
     if (queryLower.includes('this month')) {
       const startOfMonth = new Date(
         currentDate.getFullYear(),
@@ -291,7 +287,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // Last month
     if (queryLower.includes('last month')) {
       const startOfLastMonth = new Date(
         currentDate.getFullYear(),
@@ -311,7 +306,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // X months
     const monthsMatch = queryLower.match(/last\s*(\d+)\s*months?/);
     if (monthsMatch) {
       const monthsBack = parseInt(monthsMatch[1]);
@@ -333,7 +327,6 @@ export class ReportingService implements IReportingService {
       };
     }
 
-    // Default to this month
     const startOfMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -357,8 +350,6 @@ export class ReportingService implements IReportingService {
     startDate?: Date,
     endDate?: Date,
   ): Promise<IncomeEntry[]> {
-    // This would need to be implemented in your IncomeEntryRepository
-    // For now, we'll get all entries and filter (not efficient for large datasets)
     const allEntries = await this.incomeService.getIncomeHistoryForEmployee(
       { id: employeeId } as Employee,
       1000,

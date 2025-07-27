@@ -1,4 +1,3 @@
-// src/services/database/DatabaseConfig.ts
 import { PoolConfig } from 'pg';
 
 export class DatabaseConfig {

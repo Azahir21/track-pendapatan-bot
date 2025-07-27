@@ -1,4 +1,3 @@
-// src/services/business/ManagerService.ts
 import { IManagerRepository } from '../../repositories/ManagerRepository';
 import { Manager } from '../../models/Manager';
 import createDebug from 'debug';
@@ -15,7 +14,7 @@ export interface IManagerService {
     businessName: string,
   ): Promise<Manager | null>;
   getManagerByTelegramId(telegramUserId: string): Promise<Manager | null>;
-  getAllManagers(): Promise<Manager[]>; // <-- Add this line
+  getAllManagers(): Promise<Manager[]>;
 }
 
 export class ManagerService implements IManagerService {
@@ -26,7 +25,6 @@ export class ManagerService implements IManagerService {
     businessName: string = 'My Garage Business',
   ): Promise<Manager> {
     try {
-      // First check if manager already exists
       const existingManager = await this.getManagerByTelegramId(telegramUserId);
 
       if (existingManager) {
@@ -34,7 +32,6 @@ export class ManagerService implements IManagerService {
         return existingManager;
       }
 
-      // Create new manager (business registration)
       debug('Creating new manager for business:', businessName);
       const manager = new Manager(telegramUserId, businessName.trim());
 
@@ -79,15 +76,13 @@ export class ManagerService implements IManagerService {
     businessName: string,
   ): Promise<Manager | null> {
     try {
-      // Check if user already has a business (enforce 1 business per account)
       const existingManager = await this.getManagerByTelegramId(telegramUserId);
 
       if (existingManager) {
         debug('User already has a business:', existingManager.business_name);
-        return null; // Return null to indicate business already exists
+        return null;
       }
 
-      // Create new business
       return await this.getOrCreateManager(telegramUserId, businessName);
     } catch (error) {
       debug('Error registering business:', error);

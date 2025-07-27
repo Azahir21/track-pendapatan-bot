@@ -50,7 +50,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
         return '❌ No business found. Please register your business first.';
       }
 
-      // Parse time frame to get number of months
       const months = this.parseMonthsFromTimeFrame(timeFrame);
 
       const trendAnalysis = await this.reportingService.generateTrendAnalysis(
@@ -62,7 +61,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
       reportText += `📅 Analysis Period: ${timeFrame} (${months} months)\n`;
       reportText += `📊 Overall Trend: ${trendAnalysis.overallTrend.toUpperCase()} by ${trendAnalysis.trendPercentage}%\n\n`;
 
-      // Monthly breakdown
       reportText += `📊 Monthly Performance:\n`;
       trendAnalysis.periods.forEach((period, index) => {
         const trendIcon =
@@ -80,7 +78,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
         reportText += `• ${insight}\n`;
       });
 
-      // Add market analysis if requested
       if (includeMarketAnalysis && months >= 3) {
         reportText += '\n🌐 Market Context & External Factors:\n';
 
@@ -93,7 +90,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
         }
       }
 
-      // Add recommendations
       reportText += '\n💡 Recommendations:\n';
       const recommendations = this.generateRecommendations(trendAnalysis);
       recommendations.forEach((rec) => {
@@ -120,7 +116,7 @@ export class GenerateTrendAnalysisTool extends BaseTool {
       return 6;
     if (lowerFrame.includes('year')) return 12;
 
-    return 3; // Default to 3 months
+    return 3;
   }
 
   private async getMarketContext(trendAnalysis: any): Promise<string> {
@@ -134,7 +130,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
     let contextText = '';
 
     for (const query of searchQueries.slice(0, 2)) {
-      // Limit to 2 searches to avoid rate limits
       try {
         const results = await this.webSearchService.search(query, 3);
 
@@ -143,7 +138,7 @@ export class GenerateTrendAnalysisTool extends BaseTool {
           results.slice(0, 2).forEach((result) => {
             contextText += `• ${result.title}\n  ${result.snippet}\n`;
           });
-          break; // Use first successful search
+          break;
         }
       } catch (error) {
         debug('Search error:', error);
@@ -155,7 +150,6 @@ export class GenerateTrendAnalysisTool extends BaseTool {
       contextText =
         '• Market data analysis: External factors may include seasonal variations, economic conditions, and local automotive service demand\n';
 
-      // Add contextual analysis based on trend
       if (trendAnalysis.overallTrend === 'increasing') {
         contextText +=
           '• Positive trend may indicate growing automotive service demand or improved service quality\n';
@@ -201,15 +195,12 @@ export class GenerateTrendAnalysisTool extends BaseTool {
       recommendations.push('Analyze competitor offerings and market gaps');
     }
 
-    // Add seasonal recommendations if applicable
     const currentMonth = new Date().getMonth();
     if (currentMonth >= 11 || currentMonth <= 1) {
-      // Dec, Jan, Feb
       recommendations.push(
         'Consider end-of-year maintenance campaigns for vehicle owners',
       );
     } else if (currentMonth >= 5 && currentMonth <= 7) {
-      // Jun, Jul, Aug
       recommendations.push(
         'Leverage travel season for pre-trip vehicle maintenance services',
       );

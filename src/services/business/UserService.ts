@@ -1,4 +1,3 @@
-// src/services/business/UserService.ts
 import { User } from '../../models/User';
 import { IUserRepository } from '../../repositories/UserRepository';
 import createDebug from 'debug';
@@ -23,7 +22,6 @@ export class UserService implements IUserService {
     try {
       debug('Getting or creating user:', telegramUserId);
 
-      // Try to find existing user
       const existingUser =
         await this.userRepository.findByTelegramId(telegramUserId);
       if (existingUser) {
@@ -31,13 +29,11 @@ export class UserService implements IUserService {
         return existingUser;
       }
 
-      // If user doesn't exist and no employee name provided, return null
       if (!employeeName) {
         debug('User not found and no employee name provided');
         return null;
       }
 
-      // Create new user
       const newUser = new User(telegramUserId, employeeName);
       const createdUser = await this.userRepository.create(newUser);
       debug('User created:', createdUser.employee_name);

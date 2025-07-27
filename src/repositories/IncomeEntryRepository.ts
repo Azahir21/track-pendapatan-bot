@@ -1,4 +1,3 @@
-// src/repositories/IncomeEntryRepository.ts
 import { Pool } from 'pg';
 import { BaseRepository } from './BaseRepository';
 import { IncomeEntry } from '../models/IncomeEntry';
@@ -195,7 +194,6 @@ export class IncomeEntryRepository
     }));
   }
 
-  // Legacy methods for backward compatibility with User-based system
   public async findTodayByUserId(
     userId: number,
   ): Promise<{ count: number; total: number }> {

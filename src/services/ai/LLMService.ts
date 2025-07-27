@@ -24,11 +24,9 @@ export class LLMService implements ILLMService {
     debug('Processing message for user:', userId);
 
     try {
-      // Get conversation history
       let conversation = this.sessionManager.getSession(userId);
       debug('Current conversation length:', conversation.length);
 
-      // Add user message to conversation history
       if (message && message.trim()) {
         this.sessionManager.addMessage(userId, {
           role: 'user',
@@ -37,14 +35,10 @@ export class LLMService implements ILLMService {
         conversation = this.sessionManager.getSession(userId);
       }
 
-      // Validate messages
       const validMessages = this.sessionManager.validateMessages(conversation);
 
-      // Create tools for this user
       const tools = this.toolFactory.createTools(userId);
-      debug('Available tools:', Object.keys(tools));
 
-      // Convert tools to the format expected by AI SDK
       const aiTools: Record<string, any> = {};
       for (const [key, tool] of Object.entries(tools)) {
         aiTools[key] = {
@@ -66,7 +60,6 @@ export class LLMService implements ILLMService {
 
       debug('Calling generateText with', Object.keys(aiTools).length, 'tools');
 
-      // Generate response with more explicit tool instructions
       const result = await generateText({
         model: google('gemini-1.5-flash'),
         system: this.getOptimizedSystemPrompt(),
@@ -76,8 +69,8 @@ export class LLMService implements ILLMService {
         })),
         tools: aiTools,
         maxTokens: 1200,
-        temperature: 0.3, // Lower temperature for more consistent tool usage
-        toolChoice: 'auto', // Explicitly enable automatic tool choice
+        temperature: 0.3,
+        toolChoice: 'auto',
       });
 
       debug('GenerateText response - text:', result.text);
@@ -92,7 +85,6 @@ export class LLMService implements ILLMService {
 
       let response = result.text;
 
-      // Handle cases where the model doesn't provide text but executed tools
       if (
         (!response || response.trim().length === 0) &&
         result.toolResults &&
@@ -100,7 +92,6 @@ export class LLMService implements ILLMService {
       ) {
         debug('No text response but have tool results, using fallback...');
 
-        // Create a contextual response based on the tool that was executed
         response = this.createContextualResponse(
           result.toolCalls,
           result.toolResults,
@@ -108,14 +99,12 @@ export class LLMService implements ILLMService {
         );
       }
 
-      // Final fallback
       if (!response || response.trim().length === 0) {
         response = this.getDefaultResponse();
       }
 
       debug('Final response:', response);
 
-      // Add assistant response to conversation history
       if (response && response.trim()) {
         this.sessionManager.addMessage(userId, {
           role: 'assistant',
@@ -151,16 +140,15 @@ export class LLMService implements ILLMService {
         ? firstResult.result
         : JSON.stringify(firstResult.result);
 
-    // Create contextual responses based on tool type
     switch (firstToolCall.toolName) {
       case 'getCurrentTime':
         return `The current time is: ${toolResult}`;
 
       case 'calculateMath':
-        return toolResult; // Math tool already returns a formatted response
+        return toolResult;
 
       case 'getWeather':
-        return toolResult; // Weather tool already returns a formatted response
+        return toolResult;
 
       case 'registerBusiness':
         return `${toolResult}\n\n🚀 Your business is now registered! Next steps:\n• Register employees\n• Start recording daily income\n• Generate business reports`;
@@ -220,23 +208,31 @@ CRITICAL RULES:
 - For reporting requests, ALWAYS use generateEmployeeReport or generateTrendAnalysis tools
 - Parse time frames intelligently from user queries
 - When user asks for "all employees", leave employeeName empty/undefined in generateEmployeeReport
+- When user requests CSV, Excel, or spreadsheet format, use format="csv" parameter
+- When user requests DETAILED or day-by-day CSV data, use format="detailed_csv" parameter
 
 ADVANCED REPORTING CAPABILITIES:
 - Employee performance reports for any time period
 - Trend analysis with real market context
 - Business insights with external factor analysis
 - Intelligent time frame parsing (this week, last month, 2 weeks ago, etc.)
+- CSV export for spreadsheet analysis (summary and detailed formats)
+- Day-by-day detailed CSV with individual transaction records
 
 TOOL USAGE EXAMPLES:
 - "report for all employees this week" → MUST call generateEmployeeReport with timeFrame="this week" and NO employeeName
-- "report for Budi last month" → MUST call generateEmployeeReport with employeeName="Budi" and timeFrame="last month"
-- "trend analysis last 3 months" → MUST call generateTrendAnalysis with timeFrame="last 3 months"
-- "why income declining" → MUST call generateTrendAnalysis with market analysis enabled
+- "csv data for all employees this month" → MUST call generateEmployeeReport with timeFrame="this month", format="csv_file" and NO employeeName
+- "detailed csv for all employees this month" → MUST call generateEmployeeReport with timeFrame="this month", format="detailed_csv_file" and NO employeeName
+- "csv file for employees" → MUST call generateEmployeeReport with format="csv_file"
+- "detailed data file for this month" → MUST call generateEmployeeReport with timeFrame="this month", format="detailed_csv_file"
 
-PARAMETER HANDLING:
-- For ALL employees: Do NOT provide employeeName parameter or set it to undefined
-- For SPECIFIC employee: Provide the exact employee name
-- For time frames: Use natural language like "this week", "last month", etc.
+FORMAT DETECTION:
+When user requests:
+- "file", "download", "attachment", "send file" → use format="csv_file" or "detailed_csv_file"
+- "detailed file", "detailed csv file" → format="detailed_csv_file"
+- "csv file", "excel file" → format="csv_file"
+- "detailed", "day by day" (without file) → format="detailed_csv"
+- "csv" (without file) → format="csv"
 
 AVAILABLE TOOLS:
 🕒 getCurrentTime, calculateMath, getWeather

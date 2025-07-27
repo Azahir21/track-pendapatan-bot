@@ -1,4 +1,3 @@
-// src/models/User.ts
 export interface IUser {
   id?: number;
   telegram_user_id: string;

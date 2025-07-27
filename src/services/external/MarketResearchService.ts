@@ -42,7 +42,6 @@ export class MarketResearchService implements IMarketResearchService {
     const insights: MarketInsight[] = [];
 
     try {
-      // Search for industry trends
       const industryQueries = [
         `indonesia ${businessType} industry trends 2024`,
         `automotive service business indonesia market analysis`,
@@ -71,7 +70,6 @@ export class MarketResearchService implements IMarketResearchService {
         }
       }
 
-      // Add fallback insights if no search results
       if (insights.length === 0) {
         insights.push(this.getFallbackIndustryInsights(businessType));
       }
@@ -180,7 +178,6 @@ export class MarketResearchService implements IMarketResearchService {
 
     results.forEach((result) => {
       if (result.snippet) {
-        // Extract key insights from snippets
         const sentences = result.snippet
           .split(/[.!?]+/)
           .filter((s: string) => s.trim().length > 20);
@@ -199,8 +196,8 @@ export class MarketResearchService implements IMarketResearchService {
 
     return {
       category,
-      insights: insights.slice(0, 5), // Limit to top 5 insights
-      sources: sources.slice(0, 3), // Limit to top 3 sources
+      insights: insights.slice(0, 5),
+      sources: sources.slice(0, 3),
       impact: this.determineImpact(insights),
       relevanceScore: this.calculateRelevanceScore(insights, category),
     };
@@ -348,16 +345,16 @@ export class MarketResearchService implements IMarketResearchService {
       ).length;
     });
 
-    return Math.min(score / insights.length, 1.0); // Normalize to 0-1
+    return Math.min(score / insights.length, 1.0);
   }
 
   private getSeasonName(
     month: number,
   ): 'rainy' | 'dry' | 'cool dry' | 'transition' {
-    if (month >= 11 || month <= 2) return 'rainy'; // Dec-Feb
-    if (month >= 3 && month <= 5) return 'dry'; // Mar-May
-    if (month >= 6 && month <= 8) return 'cool dry'; // Jun-Aug
-    return 'transition'; // Sep-Nov
+    if (month >= 11 || month <= 2) return 'rainy';
+    if (month >= 3 && month <= 5) return 'dry';
+    if (month >= 6 && month <= 8) return 'cool dry';
+    return 'transition';
   }
 
   private getFallbackIndustryInsights(businessType: string): MarketInsight {
@@ -369,7 +366,6 @@ export class MarketResearchService implements IMarketResearchService {
       'Fuel price fluctuations continue to impact customer behavior and service demand',
     ];
 
-    // Add seasonal context
     if (currentMonth >= 11 || currentMonth <= 2) {
       insights.push(
         'Rainy season typically increases demand for brake and electrical services',

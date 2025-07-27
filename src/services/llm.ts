@@ -1,4 +1,3 @@
-// src/services/llm.ts
 import { ApplicationService } from './ApplicationService';
 import createDebug from 'debug';
 
@@ -7,7 +6,6 @@ const debug = createDebug('bot:llm');
 // Singleton instance of the application service
 let appService: ApplicationService | null = null;
 
-// Initialize application service
 const initializeAppService = async (): Promise<void> => {
   if (appService && appService.isInitialized()) {
     return;
@@ -23,8 +21,6 @@ const initializeAppService = async (): Promise<void> => {
     appService = null;
   }
 };
-
-// Initialize with a delay to ensure environment variables are loaded
 setTimeout(initializeAppService, 1000);
 
 export const callLLMWithContext = async (
@@ -34,7 +30,6 @@ export const callLLMWithContext = async (
   debug('Calling LLM with context for user:', userId);
 
   try {
-    // Ensure application service is initialized
     if (!appService || !appService.isInitialized()) {
       await initializeAppService();
       if (!appService) {
@@ -62,7 +57,6 @@ export const clearUserSession = (userId: string): void => {
   }
 };
 
-// Graceful shutdown
 process.on('SIGINT', async () => {
   debug('Shutting down TrackPendapatanBot application...');
   if (appService) {
