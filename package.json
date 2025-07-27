@@ -1,5 +1,5 @@
 {
-  "name": "Track Garage Income Telegram Bot",
+  "name": "track-garage-income-telegram-bot",
   "version": "1.1.0",
   "description": "A Telegram bot for tracking garage income, built with Telegraf and Google Generative AI.",
   "main": "src/index.ts",
